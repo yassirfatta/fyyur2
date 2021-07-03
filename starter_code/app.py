@@ -75,8 +75,17 @@ def venues():
   
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
-  term = request.form.get('search_venues')
-  result= db.session.query(Venue).filter(name == term).all()
+  search = request.form.get('search_term', '')
+  venues = db.session.query(Venue).filter(Venue.name.ilike('%' + search + '%')).all()
+  result = {
+    'count': len(venues),
+    'data': []
+  }
+  for venue in venues:
+    result['data'].append({
+      'id': venue.id,
+      'name': venue.name
+    })
   return render_template('pages/search_venues.html', results=result, search_term=request.form.get('search_term', ''))
 
 
@@ -152,8 +161,17 @@ def artists():
 
 @app.route('/artists/search', methods=['POST'])
 def search_artists():
-  data = request.form.get('search_venues')
-  result= db.session.query(Artist).filter(Artist.name == data).all()
+  search = request.form.get('search_term', '')
+  artists= db.session.query(Artist).filter(Artist.name.ilike('%' + search + '%')).all()
+  result = {
+    'count': len(artists),
+    'data': []
+  }
+  for artist in artists:
+    result['data'].append({
+      'id': artist.id,
+      'name': artist.name
+    })
   return render_template('pages/search_artists.html', results=result, search_term=request.form.get('search_term', ''))
 
 @app.route('/artists/<int:artist_id>')
